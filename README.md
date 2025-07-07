@@ -45,16 +45,6 @@ Setup QdrantVectorDataBase and ElasticSearch Database.
 docker compose up -d
 ```
 
-## Download papers
-
-You can download some sample papers with:
-
-```bash
-bash scripts/download_papers.sh
-```
-
-> Note: You can add more .pdf papers to `papers` folder
-
 ## Ingest data
 
 Ingest all documents content to database. By default, it will ingest contextual RAG.
