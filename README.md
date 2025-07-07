@@ -1,8 +1,6 @@
-# Contextual RAG for Papers Understanding
+# Contextual RAG for Chatbot Admission University
 
-Simple implementation of `Contextual RAG` from [Anthropic](https://www.anthropic.com/) for papers understanding task.
-
-![](./assets/contextual_rag.png)
+Simple implementation of `Contextual RAG` from [Anthropic](https://www.anthropic.com/) for Chatbot Admission University.
 
 ## Overview
 
@@ -22,9 +20,9 @@ More details can be found here: [link](https://www.anthropic.com/news/contextual
 ## Clone the repository
 
 ```bash
-git clone https://github.com/hienhayho/papers-understanding-contextual-rag.git
+git clone https://github.com/thanhtam712/Chatbot_Admission_University.git
 
-cd papers-understanding-contextual-rag/
+cd Chatbot_Admission_University/
 ```
 
 ## Installation
@@ -37,7 +35,7 @@ pip install -r requirements.txt
 
 ## API Key Setup:
 
-Copy `.env.example` to `.env` and fill in your api keys.
+Fill your api keys in `.env` file.
 
 ## Run database
 
@@ -59,28 +57,20 @@ bash scripts/download_papers.sh
 
 ## Ingest data
 
-Ingest all papers content to database. By default, it will ingest both original RAG and contextual RAG.
+Ingest all documents content to database. By default, it will ingest contextual RAG.
 
 ```bash
-bash scripts/contextual_rag_ingest.sh both
+bash scripts/contextual_rag_ingest.sh contextual
 ```
 
-> Note: Please refer to [scripts/contextual_rag_ingest.sh](scripts/contextual_rag_ingest.sh) to change the papers dir and RAG type to be ingested.
-
-## Add file or docs folder to be ingested
-
-First indicate which type: ["both", "origin", "contextual"] and add files or folder paths at the end.
-
-```bash
-bash scripts/add_files_to_ingest.sh both a.pdf folder1/ ...
-```
+> Note: Please refer to [scripts/contextual_rag_ingest.sh](scripts/contextual_rag_ingest.sh) to change the documents dir and RAG type to be ingested.
 
 ## Run demo
 
 Add `--compare` to run the original RAG and Contextual RAG in parallel for comparison.
 
 ```bash
-python demo_contextual_rag.py --q "What is ChainBuddy ?" --compare
+python demo_contextual_rag.py --q "UIT?" --compare
 ```
 
 ## Basic Usage:
@@ -95,7 +85,7 @@ setting = Settings()
 
 rag = RAG(setting)
 
-q = "What is ChainBuddy ?"
+q = "UIT?"
 
 print(rag.contextual_rag_search(q))
 ```
