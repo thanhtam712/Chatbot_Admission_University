@@ -1,0 +1,39 @@
+services:
+    # qdrant:
+    #     image: qdrant/qdrant:latest
+    #     container_name: chatbot_qdrant
+    #     networks:
+    #         - chatbot_uit
+    #     restart: always
+
+    # elastic-search:
+    #     image: elasticsearch:8.8.0
+    #     container_name: chatbot_elastic
+    #     networks:
+    #         - chatbot_uit
+    #     restart: always
+    #     environment:
+    #         - discovery.type=single-node
+    #         - xpack.security.enabled=false
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile2
+        env_file:
+
+            - .env.production
+        container_name: chatbot_web
+        ports:
+            - '8777:8000'
+        networks:
+            - chatbot_uit
+
+        restart: always
+        # depends_on:
+        #     - qdrant
+        #     - elastic-search
+        command: chainlit run chainlit_api.py --host 0.0.0.0 --port 8000 --root-path /chatbot_uit
+
+networks:
+    chatbot_uit:
+        driver: bridge

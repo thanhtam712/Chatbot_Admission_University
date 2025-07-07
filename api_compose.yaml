@@ -1,0 +1,40 @@
+services:
+    # qdrant:
+    #     image: qdrant/qdrant:latest
+    #     container_name: chatbot_qdrant
+    #     networks:
+    #         - chatbot_uit
+    #     restart: always
+
+    # elastic-search:
+    #     image: elasticsearch:8.8.0
+    #     container_name: chatbot_elastic
+    #     networks:
+    #         - chatbot_uit
+    #     restart: always
+    #     environment:
+    #         - discovery.type=single-node
+    #         - xpack.security.enabled=false
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        env_file:
+            - .env.production
+        volumes:
+            - ./logs:/app/logs
+        container_name: chatbot_web
+        ports:
+            - '8777:8000'
+        networks:
+            - chatbot_uit
+
+        restart: always
+        # depends_on:
+        #     - qdrant
+        #     - elastic-search
+        command: python app.py
+networks:
+    chatbot_uit:
+        name: milvus
+        external: true

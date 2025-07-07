@@ -1,0 +1,58 @@
+services:
+    nginx-guest:
+        image: nginx:latest
+        ports:
+            # - '8333:8333'
+            - '8778:8778'
+        volumes:
+            - ./nginx_guest.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            web-guest-1:
+                condition: service_healthy
+            web-guest-2:
+                condition: service_healthy
+            web-guest-3:
+                condition: service_healthy
+            web-guest-4:
+                condition: service_healthy
+            web-guest-5:
+                condition: service_healthy
+        networks:
+            - chatbot_uit
+
+    web-guest-1: &web-base
+        build:
+            context: .
+            dockerfile: Dockerfile.chainlit_no_auth
+        env_file:
+            - .env
+        container_name: chatbot_web_guest_1
+        networks:
+            - chatbot_uit
+        restart: always
+        command: chainlit run chainlit_no_auth_sdk.py --host 0.0.0.0 --port 8000 --root-path /guest_tvts
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:8000/guest_tvts/health']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    web-guest-2:
+        <<: *web-base
+        container_name: chatbot_web_guest_2
+
+    web-guest-3:
+        <<: *web-base
+        container_name: chatbot_web_guest_3
+
+    web-guest-4:
+        <<: *web-base
+        container_name: chatbot_web_guest_4
+
+    web-guest-5:
+        <<: *web-base
+        container_name: chatbot_web_guest_5
+
+networks:
+    chatbot_uit:
+        driver: bridge

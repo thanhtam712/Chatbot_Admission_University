@@ -1,0 +1,40 @@
+ARG VERSION=${VERSION:-3.12}
+
+FROM python:${VERSION}
+
+ENV NODE_VERSION=20.9.0
+ENV NODE_ENV=production
+
+RUN apt update && apt install -y curl wget
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash \
+    && export NVM_DIR="$HOME/.nvm" \
+    && . "$NVM_DIR/nvm.sh" \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default \
+    && npm install -g pnpm@latest-10
+
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+
+WORKDIR /app
+
+COPY chainlit/ /app/chainlit/
+
+RUN cd chainlit/backend && pip install -v .
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN apt-get update && apt-get install -y libgl1 libglib2.0-0
+
+RUN sed -i 's/return url.__str__()/return url.__str__().replace("http","https")/' /usr/local/lib/python3.12/site-packages/chainlit/server.py
+
+COPY .chainlit /app/.chainlit
+
+COPY chainlit.md /app/chainlit.md
+
+EXPOSE 8000
+
+COPY . .

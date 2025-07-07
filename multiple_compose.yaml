@@ -1,0 +1,137 @@
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+            - '8333:8333'
+            - '8777:8777'
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            web-no-auth-1:
+                condition: service_healthy
+            web-no-auth-2:
+                condition: service_healthy
+            web-no-auth-3:
+                condition: service_healthy
+            web-no-auth-4:
+                condition: service_healthy
+            web-no-auth-5:
+                condition: service_healthy
+            # web-no-auth-6:
+            #     condition: service_healthy
+            # web-no-auth-7:
+            #     condition: service_healthy
+            # web-no-auth-8:
+            #     condition: service_healthy
+            # web-no-auth-9:
+            #     condition: service_healthy
+            # web-no-auth-10:
+            #     condition: service_healthy
+            web-1:
+                condition: service_healthy
+            web-2:
+                condition: service_healthy
+            web-3:
+                condition: service_healthy
+            web-4:
+                condition: service_healthy
+            web-5:
+                condition: service_healthy
+        networks:
+            - chatbot_uit
+
+    web-1: &web-base
+        build:
+            context: .
+            dockerfile: Dockerfile.chainlit
+        env_file:
+            - .env
+        container_name: chatbot_web_1
+        networks:
+            - chatbot_uit
+        restart: always
+        command: chainlit run chainlit_sdk.py --host 0.0.0.0 --port 8000 --root-path /tvts
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:8000/tvts/health']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    web-2:
+        <<: *web-base
+        container_name: chatbot_web_2
+
+    web-3:
+        <<: *web-base
+        container_name: chatbot_web_3
+
+    web-4:
+        <<: *web-base
+        container_name: chatbot_web_4
+
+    web-5:
+        <<: *web-base
+        container_name: chatbot_web_5
+
+    web-no-auth-1: &web-no-auth-base
+        build:
+            context: .
+            dockerfile: Dockerfile.chainlit_no_auth
+        env_file:
+            - .env.no-auth
+        container_name: chatbot_web_no_auth_1
+        networks:
+            - chatbot_uit
+        restart: always
+        command: chainlit run chainlit_no_auth_sdk.py --host 0.0.0.0 --port 8000 --root-path /guest_chatbot_uit
+        healthcheck:
+            test:
+                [
+                    'CMD',
+                    'curl',
+                    '-f',
+                    'http://localhost:8000/guest_chatbot_uit/health',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    web-no-auth-2:
+        <<: *web-no-auth-base
+        container_name: chatbot_web_no_auth_2
+
+    web-no-auth-3:
+        <<: *web-no-auth-base
+        container_name: chatbot_web_no_auth_3
+
+    web-no-auth-4:
+        <<: *web-no-auth-base
+        container_name: chatbot_web_no_auth_4
+
+    web-no-auth-5:
+        <<: *web-no-auth-base
+        container_name: chatbot_web_no_auth_5
+
+    # web-no-auth-6:
+    #     <<: *web-no-auth-base
+    #     container_name: chatbot_web_no_auth_6
+
+    # web-no-auth-7:
+    #     <<: *web-no-auth-base
+    #     container_name: chatbot_web_no_auth_7
+
+    # web-no-auth-8:
+    #     <<: *web-no-auth-base
+    #     container_name: chatbot_web_no_auth_8
+
+    # web-no-auth-9:
+    #     <<: *web-no-auth-base
+    #     container_name: chatbot_web_no_auth_9
+
+    # web-no-auth-10:
+    #     <<: *web-no-auth-base
+    #     container_name: chatbot_web_no_auth_10
+
+networks:
+    chatbot_uit:
+        driver: bridge
